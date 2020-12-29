@@ -1,0 +1,80 @@
+image: mcr.microsoft.com/dotnet/sdk:5.0
+
+stages:
+    - build
+    - test
+    - deploy
+
+variables:
+    test: "Example.Test"
+
+before_script:
+    - "dotnet restore"
+
+build_Testing:
+    stage: build
+    script:
+        - "dotnet build"
+    artifacts:
+        paths:
+        - testing/bin/Debug/net5.0
+        expire_in: 1 week
+
+build_Testing1:
+    stage: build
+    script:
+        - "dotnet build"
+    artifacts:
+        paths:
+        - testing/bin/Debug/net5.0
+        expire_in: 1 week
+
+
+test_Testing:
+    stage: test
+    script: 
+        - "dotnet test"
+    allow_failure: true
+
+
+test_Testing1:
+    stage: test
+    script: 
+        - "dotnet test"
+    allow_failure: true
+
+deploy_To_Dev:
+    stage: deploy
+    script:
+        - "echo 'Deploy'"
+
+deploy_To_Test:
+    stage: deploy
+    script:
+        - "echo 'Deploy'"
+    rules:
+        - if: '$CI_COMMIT_BRANCH =~ /^feature\/.*$/ || $CI_COMMIT_BRANCH =~ /^bugfix\/.*$/ || $CI_COMMIT_BRANCH =~ /^hotfix\/.*$/ || $CI_COMMIT_BRANCH =~ /^tech\/.*$/ || $CI_COMMIT_BRANCH == "ci"'
+          changes:
+            - testing1/**/*
+
+deploy_To_Quality:
+    stage: deploy
+    script:
+        - "echo 'Deploy'"
+    rules:
+        - if: '$CI_COMMIT_BRANCH =~ /^feature\/.*$/ || $CI_COMMIT_BRANCH =~ /^bugfix\/.*$/ || $CI_COMMIT_BRANCH =~ /^hotfix\/.*$/ || $CI_COMMIT_BRANCH =~ /^tech\/.*$/ || $CI_COMMIT_BRANCH == "ci"'
+          changes:
+            - testing/**/*
+
+deploy_To_PPROD:
+    stage: deploy
+    script:
+        - "echo 'Deploy'"
+    when: manual
+
+
+deploy_To_PROD:
+    stage: deploy
+    script:
+        - "echo 'Deploy'"
+    when: manual
